@@ -2,13 +2,18 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_primitives.h>
+#include <cstdlib>
+#include <ctime>
 //-----Arquivos criados------//
+
 #include "objetos.h"
+
 //-----Variáveis Globais-----//
 
 const int largura_t = 850;
 const int altura_t = 400;
 const int FPS = 60;
+const int NUM_COMETAS = 10;
 
 
 enum TECLAS { CIMA, BAIXO, ESQUERDA, DIREITA, SPACE };
@@ -22,6 +27,10 @@ void MoveNaveBaixo(NaveEspacial& nave);
 void MoveNaveDireita(NaveEspacial& nave);
 void MoveNaveEsquerda(NaveEspacial& nave);
 
+void InitCometas(Cometas cometas[], int tamanho);
+void LiberaCometas(Cometas cometas[], int tamanho);
+void AtualizarCometas(Cometas cometas[], int tamanho);
+void DesenhaCometas(Cometas cometas[], int tamanho);
 
 int main() {
     //-----Configurações do sistema-----//
@@ -43,7 +52,7 @@ int main() {
     bool teclas[] = { false, false, false, false, false };
     //-----Inicialização de Objetos-----//
     NaveEspacial nave;
-
+    Cometas cometas[NUM_COMETAS];
     //-----Inicialização do Allegro e da Display-----//
     ALLEGRO_DISPLAY* display = NULL;
 
@@ -70,7 +79,9 @@ int main() {
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
 
     //-----Funções iniciais-----//
+    srand(time(NULL));
     InitNave(nave);
+    InitCometas(cometas, NUM_COMETAS);
 
     //-----Loop principal----//
     al_start_timer(timer);
@@ -138,12 +149,18 @@ int main() {
                 MoveNaveDireita(nave);
             if (teclas[ESQUERDA])
                 MoveNaveEsquerda(nave);
+            LiberaCometas(cometas, NUM_COMETAS);
+            AtualizarCometas(cometas, NUM_COMETAS);
         }
 
         //----Desenho temporario-----//
         if (desenha && al_is_event_queue_empty(fila_eventos)) {
             al_draw_bitmap(fundo, 0, -150, 0);
+
+            desenha = false;
+
             DesenhaNave(nave);
+            DesenhaCometas(cometas, NUM_COMETAS);
             al_flip_display();
             al_clear_to_color(al_map_rgb(0, 0, 0));
         }
@@ -168,10 +185,11 @@ void InitNave(NaveEspacial& nave) {
     nave.y = altura_t / 2;
     nave.ID = JOGADOR;
     nave.vidas = 3;
-    nave.velocidade = 3,7;
+    nave.velocidade = 3, 7;
     nave.borda_x = 6;
-    nave.borda_y = 7; 
+    nave.borda_y = 7;
     nave.pontos = 0;
+
 }
 void DesenhaNave(NaveEspacial& nave) {
     al_draw_filled_rectangle(nave.x, nave.y - 18, nave.x + 20, nave.y - 14, al_map_rgb(255, 0, 0));
@@ -181,14 +199,14 @@ void DesenhaNave(NaveEspacial& nave) {
 }
 void MoveNaveCima(NaveEspacial& nave) {
     nave.y -= nave.velocidade;
-    if (nave.y < altura_t/2)
-        nave.y = altura_t/2;
-    
+    if (nave.y < altura_t / 2)
+        nave.y = altura_t / 2;
+
 }
 void MoveNaveBaixo(NaveEspacial& nave) {
     nave.y += nave.velocidade;
 
-    if (nave.y >  altura_t )
+    if (nave.y > altura_t)
         nave.y = altura_t;
 }
 void MoveNaveDireita(NaveEspacial& nave) {
@@ -202,4 +220,42 @@ void MoveNaveEsquerda(NaveEspacial& nave) {
 
     if (nave.x < 0)
         nave.x = 0;
+}
+void InitCometas(Cometas cometas[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        cometas[i].ID = INIMIGOS;
+        cometas[i].velocidade = 5;
+        cometas[i].borda_x = 18;
+        cometas[i].borda_y = 18;
+        cometas[i].ativo = false;
+    }
+}
+void LiberaCometas(Cometas cometas[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        if (!cometas[i].ativo) {
+            if (rand() % 500 == 0) {
+                cometas[i].x = largura_t;
+                cometas[i].y = altura_t/2 + rand() % altura_t/2;
+                cometas[i].ativo = true;
+                break;
+            }
+        }
+    }
+}
+void AtualizarCometas(Cometas cometas[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        if (cometas[i].ativo) {
+            cometas[i].x -= cometas[i].velocidade;
+            if (cometas[i].x < 0) {
+                cometas[i].ativo = false;
+            }
+        }
+    }
+}
+void DesenhaCometas(Cometas cometas[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        if (cometas[i].ativo) {
+            al_draw_filled_circle(cometas[i].x, cometas[i].y, 20, al_map_rgb(255, 0, 0));
+        }
+    }
 }
