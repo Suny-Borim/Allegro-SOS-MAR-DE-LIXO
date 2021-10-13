@@ -159,8 +159,9 @@ int main() {
 
             desenha = false;
 
-            DesenhaNave(nave);
+            
             DesenhaCometas(cometas, NUM_COMETAS);
+            DesenhaNave(nave);
             al_flip_display();
             al_clear_to_color(al_map_rgb(0, 0, 0));
         }
@@ -236,6 +237,7 @@ void LiberaCometas(Cometas cometas[], int tamanho) {
             if (rand() % 500 == 0) {
                 cometas[i].x = largura_t;
                 cometas[i].y = altura_t/2 + rand() % altura_t/2;
+                cometas[i].tipos = rand() % 3;
                 cometas[i].ativo = true;
                 break;
             }
@@ -254,8 +256,20 @@ void AtualizarCometas(Cometas cometas[], int tamanho) {
 }
 void DesenhaCometas(Cometas cometas[], int tamanho) {
     for (int i = 0; i < tamanho; i++) {
-        if (cometas[i].ativo) {
-            al_draw_filled_circle(cometas[i].x, cometas[i].y, 20, al_map_rgb(255, 0, 0));
-        }
+        switch (cometas[i].ativo){
+        case 1:
+            switch (cometas[i].tipos)
+            {
+            case 0:
+                al_draw_filled_circle(cometas[i].x, cometas[i].y, 20, al_map_rgb(255, 0, 0));
+                break;
+            case 1:
+                al_draw_filled_circle(cometas[i].x, cometas[i].y, 20, al_map_rgb(255, 255, 0));
+                break;
+            case 2:
+                al_draw_filled_circle(cometas[i].x, cometas[i].y, 20, al_map_rgb(255, 0, 255));
+                break;
+            }break;
+        }   
     }
 }

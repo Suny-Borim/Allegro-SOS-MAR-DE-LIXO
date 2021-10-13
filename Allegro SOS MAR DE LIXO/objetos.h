@@ -1,4 +1,5 @@
-enum IDS { JOGADOR, INIMIGOS };
+enum IDS { JOGADOR, INIMIGOS, ANIMAIS };
+enum tipos{lixos,turtuga,seupaidecalcinha};
 struct NaveEspacial {
     int ID;
     int x;
@@ -11,6 +12,7 @@ struct NaveEspacial {
 };
 struct Cometas {
     int ID;
+    int tipos;
     int x;
     int y;
     int velocidade;
