@@ -1,6 +1,7 @@
-enum IDS { JOGADOR, INIMIGOS, ANIMAIS };
-enum tipos{lixos,turtuga,seupaidecalcinha};
-struct NaveEspacial {
+enum IDS { JOGADOR, INIMIGOS, ANIMAIS, PROJETIL };
+enum tipos { tartaruga,garrafa,macaco};
+bool inicio;
+struct BARCO {
     int ID;
     int x;
     int y;
@@ -9,8 +10,11 @@ struct NaveEspacial {
     int borda_x;
     int borda_y;
     int pontos;
+    bool arma;
+
+    ALLEGRO_BITMAP* image;
 };
-struct Cometas {
+struct JogadosnoMAR {
     int ID;
     int tipos;
     int x;
@@ -19,4 +23,18 @@ struct Cometas {
     int borda_x;
     int borda_y;
     bool ativo;
+};
+//objeto
+struct Projeteis {
+    int ID;
+    int x;
+    int y;
+    int velocidade;
+    bool ativo;
+};
+struct fundo {
+    float x;
+    float y;
+
+    ALLEGRO_BITMAP* fundo2 = al_load_bitmap("imgs\\fundo2.png");
 };
