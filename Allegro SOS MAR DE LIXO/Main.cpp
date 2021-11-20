@@ -85,11 +85,13 @@ int main() {
     bool tocar_aplausos = false;
 
     //-----Adicionando imagens-----//
+    ALLEGRO_BITMAP* START = al_load_bitmap("imgs\\gamestart.png");
     ALLEGRO_BITMAP* fundo = al_load_bitmap("imgs\\fundo.png");
     ALLEGRO_BITMAP* BARRA = al_load_bitmap("imgs\\Barra.png");
     ALLEGRO_BITMAP* fundo2 = al_load_bitmap("imgs\\fundo2.png");
     ALLEGRO_BITMAP* WIN = al_load_bitmap("imgs\\WIN.png");
     ALLEGRO_BITMAP* LOSE = al_load_bitmap("imgs\\LOSE.png");
+ 
 
     ALLEGRO_BITMAP* barco;
 
@@ -150,7 +152,7 @@ int main() {
 gamestart:
     while (!fim) {
 
-     
+        
 
         ALLEGRO_EVENT ev;
         al_wait_for_event(fila_eventos, &ev);
@@ -223,7 +225,7 @@ gamestart:
                 break;
             }
         }
-        else if (ev.type == ALLEGRO_EVENT_TIMER) {
+        else if (ev.type == ALLEGRO_EVENT_TIMER&&gamestart==1) {
             desenha = true;
 
             if (teclas[CIMA])
@@ -236,16 +238,22 @@ gamestart:
                 MoveNaveEsquerda(barquin);
             if (teclas[SPACE])
                 AtualizarBalas(balas, NUM_BALAS, barquin);
-            if (gamestart == 1) {
-                LiberaCometas(BichinhosELixos, NUM_LixosOuBichos);
-                AtualizarCometas(BichinhosELixos, NUM_LixosOuBichos);
-                CometaColidido(BichinhosELixos, NUM_LixosOuBichos, barquin);
-                BalaColidida(balas, NUM_BALAS, BichinhosELixos, NUM_LixosOuBichos, barquin);
-                al_play_sample_instance(inst_trilha_sonora);
-            }
+
+            LiberaCometas(BichinhosELixos, NUM_LixosOuBichos);
+            AtualizarCometas(BichinhosELixos, NUM_LixosOuBichos);
+            CometaColidido(BichinhosELixos, NUM_LixosOuBichos, barquin);
+            BalaColidida(balas, NUM_BALAS, BichinhosELixos, NUM_LixosOuBichos, barquin);
+            al_play_sample_instance(inst_trilha_sonora);
         }
 
         //----Desenho temporario-----//
+        if (desenha && al_is_event_queue_empty(fila_eventos) && gamestart == 0) {
+
+            al_draw_bitmap(START, 0, 0, 0);
+            desenha = false;
+            al_flip_display();
+            al_clear_to_color(al_map_rgb(0, 0, 0));
+        }
         if (desenha && al_is_event_queue_empty(fila_eventos)&&gamestart==1) {
 
             al_draw_bitmap(fundo, 0, -150, 0);
@@ -270,17 +278,13 @@ gamestart:
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
         }
-        else  {
-            al_draw_bitmap(fundo, 0, -150, 0);
-            al_flip_display;
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-        }
     }
 
 
 
     //-----Finalizações do programa------//
     al_destroy_display(display);
+    al_destroy_bitmap(START);
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(fundo);
     al_destroy_bitmap(BARRA);
